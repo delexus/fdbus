@@ -144,6 +144,9 @@ if (MSVC)
     link_libraries(ws2_32.lib)
     set(LIB_BUILD_TYPE "STATIC")
 else()
+    if (ANDROID OR fdbus_ANDROID)
+        link_libraries(log)
+    endif()
     # Android's bionic libc does not provide a separate pthread library; linking
     # with -lpthread fails there. Use a guard to skip it for Android builds.
     if (fdbus_LINK_PTHREAD_LIB AND NOT ANDROID AND NOT fdbus_ANDROID)
