@@ -22,9 +22,6 @@ set(CMAKE_C_COMPILE D:/Android/Sdk/ndk/${NDK_VERSION}/toolchains/llvm/prebuilt/w
 set(CMAKE_CXX_COMPILE D:/Android/Sdk/ndk/${NDK_VERSION}/toolchains/llvm/prebuilt/windows-x86_64/bin/aarch64-linux-android21-clang++)
 set(CMAKE_TOOLCHAIN_FILE D:/Android/Sdk/ndk/${NDK_VERSION}/build/cmake/android.toolchain.cmake)
 
-set(PROTOBUF_ROOT D:/Android/protobuf-android-install)
-set(PROTOBUF_INCLUDE_DIR D:/Android/protobuf-android-install/include)
-
 project(fdbus-example C CXX)
 
 option(fdbus_LOG_TO_STDOUT "Log to stdout" OFF)
@@ -36,8 +33,14 @@ option(fdbus_LINK_PTHREAD_LIB "specify -lpthread to link" ON)
 
 # Path to a protobuf installation that provides both headers and libraries.
 # This is useful for cross-compiling, such as Android builds, where the
-# default system search paths do not contain protobuf artifacts.
-set(PROTOBUF_ROOT "" CACHE PATH "Root directory of protobuf installation")
+# default system search paths do not contain protobuf artifacts. Preserve any
+# pre-configured value (for example, passed via the environment or a toolchain
+# file) instead of overwriting it with an empty string.
+if(NOT DEFINED PROTOBUF_ROOT)
+    set(PROTOBUF_ROOT "" CACHE PATH "Root directory of protobuf installation")
+else()
+    set(PROTOBUF_ROOT "${PROTOBUF_ROOT}" CACHE PATH "Root directory of protobuf installation")
+endif()
 
 find_path(
     PROTOBUF_INCLUDE_DIR
@@ -78,6 +81,17 @@ if (fdbus_LOG_TO_STDOUT)
 endif()
 if (fdbus_ENABLE_LOG)
     add_definitions("-DCONFIG_DEBUG_LOG")
+endif()
+
+if (CMAKE_SYSTEM_NAME STREQUAL "Android")
+    # Bionic already provides pthread functionality, so avoid linking an
+    # explicit pthread library which may not exist for the target.
+    set(
+        fdbus_LINK_PTHREAD_LIB
+        OFF
+        CACHE BOOL "specify -lpthread to link"
+        FORCE
+    )
 endif()
 
 if (MSVC)
