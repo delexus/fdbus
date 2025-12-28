@@ -8,6 +8,39 @@ option(fdbus_CLIB_TEST "build test for clib" ON)
 option(fdbus_SEC_USING_SSL "Using SSL for security" OFF)
 option(fdbus_LINK_PTHREAD_LIB "specify -lpthread to link" ON)
 
+# Path to a protobuf installation that provides both headers and libraries.
+# This is useful for cross-compiling, such as Android builds, where the
+# default system search paths do not contain protobuf artifacts.
+set(PROTOBUF_ROOT "" CACHE PATH "Root directory of protobuf installation")
+
+find_path(
+    PROTOBUF_INCLUDE_DIR
+    google/protobuf/runtime_version.h
+    PATHS ${PROTOBUF_ROOT}
+    PATH_SUFFIXES include
+)
+
+# Try to discover protobuf via the CMake config files when no root hint is
+# provided. If the config is available, reuse the include and library hints
+# from the package.
+if(NOT PROTOBUF_INCLUDE_DIR)
+    find_package(Protobuf QUIET)
+    if(Protobuf_INCLUDE_DIRS)
+        set(PROTOBUF_INCLUDE_DIR ${Protobuf_INCLUDE_DIRS})
+    endif()
+endif()
+
+find_library(
+    PROTOBUF_LIBRARY
+    NAMES protobuf libprotobuf
+    PATHS ${PROTOBUF_ROOT}
+    PATH_SUFFIXES lib
+)
+
+if(NOT PROTOBUF_LIBRARY AND Protobuf_LIBRARIES)
+    set(PROTOBUF_LIBRARY ${Protobuf_LIBRARIES})
+endif()
+
 if (fdbus_LOG_TO_STDOUT)
     add_definitions("-DCONFIG_LOG_TO_STDOUT")
 endif()
@@ -45,6 +78,7 @@ set(IDL_GEN_ROOT ${CMAKE_CURRENT_BINARY_DIR})
 include_directories(
     ${PACKAGE_SOURCE_ROOT}/public
     ${IDL_GEN_ROOT}
+    ${PROTOBUF_INCLUDE_DIR}
     )
 link_libraries(fdbus)
 
@@ -57,13 +91,22 @@ if (MSVC)
         endif(${flag_var} MATCHES "/MD")
     endforeach(flag_var)
 
-    link_libraries(libprotobufd ws2_32.lib)
+    if (PROTOBUF_LIBRARY)
+        link_libraries(${PROTOBUF_LIBRARY})
+    else()
+        link_libraries(libprotobufd)
+    endif()
+    link_libraries(ws2_32.lib)
     if (fdbus_SEC_USING_SSL)
         link_libraries(libssl libcrypto)
     endif()
     set(LIB_BUILD_TYPE "STATIC")
 else()
-    link_libraries(protobuf)
+    if (PROTOBUF_LIBRARY)
+        link_libraries(${PROTOBUF_LIBRARY})
+    else()
+        link_libraries(protobuf)
+    endif()
     if (fdbus_LINK_PTHREAD_LIB)
         link_libraries(pthread)
     endif()
