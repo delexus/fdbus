@@ -1,0 +1,9 @@
+on post-fs-data
+    mkdir /data/misc/fdbus 0755 system system
+
+service fdbus-name-server /system/bin/name-server -u tcp://172.16.16.2:60000 -n android
+    class early_hal
+    user system
+    group system
+    seclabel u:r:shell:s0
+    writepid /dev/cpuset/system-background/tasks
