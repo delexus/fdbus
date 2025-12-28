@@ -969,7 +969,7 @@ void CFdbMessage::autoReply(CBaseSession *session
                             , const char *description)
 {
     auto fdb_msg = castToMessage<CFdbMessage *>(msg_ref);
-    if (fdb_msg->needReply() && msg_ref.unique())
+    if (fdb_msg->needReply() && (msg_ref.use_count() == 1))
     {
         fdb_msg->sendStatus(session, error_code, description);
     }
@@ -987,7 +987,7 @@ void CFdbMessage::doAutoReply(CBaseJob::Ptr &msg_ref, int32_t error_code, const 
 
 void CFdbMessage::autoReply(CBaseJob::Ptr &msg_ref, int32_t error_code, const char *description)
 {
-    if (msg_ref.unique())
+    if (msg_ref.use_count() == 1)
     {
         auto fdb_msg = castToMessage<CFdbMessage *>(msg_ref);
         fdb_msg->doAutoReply(msg_ref, error_code, description);

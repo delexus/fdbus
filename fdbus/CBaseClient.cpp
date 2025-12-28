@@ -112,7 +112,7 @@ void CClientSocket::onSessionDeleted(CFdbSession *session)
         }
         else
         {
-            LOG_E("CClientSocket: client %s shutdown but try to request address of and connect again...\n",
+            LOG_E("CClientSocket: client %s shutdown but try to request address of %s and connect again...\n",
                   client->name().c_str(), client->nsName().c_str());
         }
     }
