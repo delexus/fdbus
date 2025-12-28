@@ -22,7 +22,8 @@
         "CMAKE_C_COMPILER": "D:/Android/Sdk/ndk/29.0.14206865/toolchains/llvm/prebuilt/windows-x86_64/bin/aarch64-linux-android21-clang",
         "CMAKE_CXX_COMPILER": "D:/Android/Sdk/ndk/29.0.14206865/toolchains/llvm/prebuilt/windows-x86_64/bin/aarch64-linux-android21-clang++",
         "CMAKE_TOOLCHAIN_FILE": "D:/Android/Sdk/ndk/29.0.14206865/build/cmake/android.toolchain.cmake",
-        "fdbus_ANDROID": "ON"
+        "fdbus_ANDROID": "ON",
+        "PROTOBUF_ROOT": "D:/Android/protobuf-android-install"
       }
     }
   ]
