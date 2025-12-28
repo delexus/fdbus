@@ -15,7 +15,9 @@ set(PROTOBUF_ROOT "" CACHE PATH "Root directory of protobuf installation")
 
 find_path(
     PROTOBUF_INCLUDE_DIR
-    google/protobuf/runtime_version.h
+    NAMES
+        google/protobuf/runtime_version.h
+        google/protobuf/descriptor.h
     PATHS ${PROTOBUF_ROOT}
     PATH_SUFFIXES include
 )
@@ -28,6 +30,10 @@ if(NOT PROTOBUF_INCLUDE_DIR)
     if(Protobuf_INCLUDE_DIRS)
         set(PROTOBUF_INCLUDE_DIR ${Protobuf_INCLUDE_DIRS})
     endif()
+endif()
+
+if(NOT PROTOBUF_INCLUDE_DIR)
+    message(FATAL_ERROR "Protobuf headers not found. Set PROTOBUF_ROOT to a valid installation or ensure Protobuf is discoverable.")
 endif()
 
 find_library(
