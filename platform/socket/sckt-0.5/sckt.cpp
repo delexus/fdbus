@@ -89,6 +89,10 @@ typedef int socklen_t;
 #include <ifaddrs.h>
 //#include <scm_cred.h>
 
+#if defined(__ANDROID__) && (__ANDROID_API__ < 24)
+#define CONFIG_NO_IFADDR
+#endif
+
 #define M_INVALID_SOCKET (-1)
 #define M_SOCKET_ERROR (-1)
 #define M_EINTR EINTR
