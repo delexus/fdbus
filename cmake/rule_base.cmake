@@ -49,13 +49,15 @@ endif()
 
 file(TO_CMAKE_PATH ${RULE_DIR} RULE_DIR)
 # uninstall target
-configure_file(
-    "${RULE_DIR}/cmake_uninstall.cmake.in"
-    "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
-    IMMEDIATE @ONLY)
+if (NOT TARGET uninstall)
+    configure_file(
+        "${RULE_DIR}/cmake_uninstall.cmake.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
+        IMMEDIATE @ONLY)
 
-add_custom_target(uninstall
-    COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
+    add_custom_target(uninstall
+        COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
+endif()
 
 function(print_variable)
     message(STATUS "${ARGV0}=${${ARGV0}}")
@@ -97,4 +99,3 @@ function(target_source_directories)
         target_source_files(${ARGV0} ${src_list})
     endforeach()
 endfunction()
-
