@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1.3)
+cmake_minimum_required(VERSION 3.10)
 project(fdbus C CXX)
 
 option(fdbus_ENABLE_LOG "Enable log" ON)
@@ -79,11 +79,13 @@ endif()
 if(DEFINED RULE_DIR)
     include(${RULE_DIR}/rule_base.cmake)
 else()
-    set(RULE_DIR ${CMAKE_SOURCE_DIR})
+    set(RULE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
     include(rule_base.cmake)
 endif()
 
-get_filename_component(PACKAGE_SOURCE_ROOT ${CMAKE_SOURCE_DIR} PATH)
+if (NOT DEFINED PACKAGE_SOURCE_ROOT)
+    get_filename_component(PACKAGE_SOURCE_ROOT ${CMAKE_CURRENT_SOURCE_DIR} PATH)
+endif()
 
 print_variable(PACKAGE_SOURCE_ROOT)
 

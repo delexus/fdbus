@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1.3)
+cmake_minimum_required(VERSION 3.10)
 project(fdbus-example C CXX)
 
 option(fdbus_LOG_TO_STDOUT "Log to stdout" OFF)
@@ -30,13 +30,15 @@ endif()
 if(DEFINED RULE_DIR)
     include(${RULE_DIR}/rule_base.cmake)
 else()
-    set(RULE_DIR ${CMAKE_SOURCE_DIR})
+    set(RULE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
     include(rule_base.cmake)
 endif()
 add_definitions("-DCONFIG_PROTOBUF_4_0_X")
 
-get_filename_component(PACKAGE_SOURCE_ROOT ${CMAKE_SOURCE_DIR} PATH)
-get_filename_component(PACKAGE_SOURCE_ROOT ${PACKAGE_SOURCE_ROOT} PATH)
+if (NOT DEFINED PACKAGE_SOURCE_ROOT)
+    get_filename_component(PACKAGE_SOURCE_ROOT ${CMAKE_CURRENT_SOURCE_DIR} PATH)
+    get_filename_component(PACKAGE_SOURCE_ROOT ${PACKAGE_SOURCE_ROOT} PATH)
+endif()
 
 set(IDL_GEN_ROOT ${CMAKE_CURRENT_BINARY_DIR})
 
